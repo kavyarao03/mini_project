@@ -1,0 +1,100 @@
+import numpy as np
+import time
+import glob 
+import cv2
+import os
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from skimage.color import rgb2grey
+import pandas as pd
+
+images = []
+image_labels  = []
+roi = []
+
+directory = 'train'
+list_of_files = os.listdir(directory)
+index = 0
+for file in list_of_files:
+    subfiles = os.listdir(directory+'/'+file)
+    for sub in subfiles:
+       extension = os.path.splitext(os.path.basename(sub))[1]
+       if extension == '.csv':
+            df = pd.read_csv(directory+'/'+file+'/'+sub, sep=';')
+            roi.append(df)
+
+#images = np.stack([img[:, :, np.newaxis] for img in images], axis=0).astype(np.float32)
+#image_labels = np.matrix(image_labels).astype(np.float32)
+image = np.load('images.txt.npy')
+image_labels = np.load('labels.txt.npy')
+images = np.asarray(image)
+image_labels = np.asarray(image_labels)
+print(images.shape)
+print(images_labels.shape)
+plt.imshow(images[45, :, :, :].reshape(32, 32), cmap='gray')
+print(image_labels[45, :])
+plt.show()
+print(roi[0])
+
+(train_X, test_X, train_y, test_y) = train_test_split(images, image_labels, test_size=0.2, random_state=42)
+print(train_X.shape)
+print(train_y.shape)
+print(test_X.shape)
+print(test_y.shape)
+
+
+
+
+
+
+
+
+import numpy as np
+import time
+import glob 
+import cv2
+import os
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from skimage.color import rgb2grey
+
+images = []
+image_labels  = []
+roi = []
+
+directory = 'train'
+list_of_files = os.listdir(directory)
+index = 0
+for file in list_of_files:
+    subfiles = os.listdir(directory+'/'+file)
+    for sub in subfiles:
+        extension = os.path.splitext(os.path.basename(sub))[1]
+        if extension == '.ppm':
+            image = cv2.imread(directory+'/'+file+'/'+sub)
+            image = rgb2grey(image)
+            image = (image / 255.0) # rescale
+            image = cv2.resize(image, (32, 32)) #resize
+            images.append(image)
+            labels = np.zeros((43, ), dtype=np.float32)
+            labels[index] = 1.0
+            image_labels.append(labels)
+            print(str(index)+' '+str(file))
+    index = index + 1
+
+images = np.stack([img[:, :, np.newaxis] for img in images], axis=0).astype(np.float32)
+image_labels = np.matrix(image_labels).astype(np.float32)
+
+
+np.save('images.txt',images)
+np.save('labels.txt',image_labels)
+print(images.shape)
+print(image_labels.shape)
+plt.imshow(images[45, :, :, :].reshape(32, 32), cmap='gray')
+print(image_labels[45, :])
+plt.show()
+
+
+
+
+
+
